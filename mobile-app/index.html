@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0b1220">
+  <link rel="stylesheet" href="styles.css">
+  <title>Visitor Safety Services</title>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="masthead">
+      <a class="service-brand" href="#mainContent" aria-label="Visitor Safety Services home">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M12 2.8 20 6v5.2c0 5.2-3.4 8.5-8 10-4.6-1.5-8-4.8-8-10V6l8-3.2Z" stroke="currentColor" stroke-width="1.6"/>
+            <path d="m8.5 12.1 2.2 2.2 4.8-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <span class="brand-copy">
+          <span class="brand-kicker">VISITOR SUPPORT SERVICES</span>
+          <span class="brand-title">Tourist Safety</span>
+        </span>
+      </a>
+      <span class="service-tag">SAFETY PORTAL</span>
+    </header>
+
+    <main id="mainContent" class="container">
+      <section id="registrationView" class="panel">
+        <div class="page-intro">
+          <p class="eyebrow">VISITOR REGISTRATION</p>
+          <h1>Safety registration</h1>
+          <p class="intro-copy">Provide your travel and contact details to enable safety monitoring during your visit.</p>
+        </div>
+
+        <form id="registrationForm" class="registration-form">
+          <div class="form-grid">
+            <label class="field field-wide" for="name">
+              <span>Full name</span>
+              <input type="text" id="name" name="name" autocomplete="name" placeholder="Enter your full name" required>
+            </label>
+            <label class="field field-wide" for="passport">
+              <span>Passport or identity number</span>
+              <input type="text" id="passport" name="passport" autocomplete="off" placeholder="Enter your document number" required>
+            </label>
+            <label class="field field-wide" for="phone">
+              <span>Mobile phone</span>
+              <input type="tel" id="phone" name="phone" autocomplete="tel" placeholder="Include country code if applicable" required>
+            </label>
+            <label class="field" for="checkinDate">
+              <span>Arrival date</span>
+              <input type="date" id="checkinDate" name="checkinDate" required>
+            </label>
+            <label class="field" for="checkoutDate">
+              <span>Departure date</span>
+              <input type="date" id="checkoutDate" name="checkoutDate" required>
+            </label>
+            <label class="field field-wide" for="itinerary">
+              <span>Travel itinerary</span>
+              <textarea id="itinerary" name="itinerary" rows="3" placeholder="List planned destinations or travel details" required></textarea>
+            </label>
+            <label class="field field-wide" for="emergencyContact">
+              <span>Emergency contact phone</span>
+              <input type="tel" id="emergencyContact" name="emergencyContact" autocomplete="tel" placeholder="Enter a contact number" required>
+            </label>
+          </div>
+
+          <p class="form-note">Please check that your contact information is accurate before submitting.</p>
+          <button type="submit" class="btn btn-primary">Submit registration</button>
+        </form>
+      </section>
+
+      <section id="trackingView" class="panel hidden" aria-live="polite">
+        <div class="tracking-heading">
+          <div>
+            <p class="eyebrow">VISITOR SAFETY MONITORING</p>
+            <h1>Tracking status</h1>
+            <p class="intro-copy">Registration is active for <span id="touristName"></span>.</p>
+          </div>
+          <p id="safetyScore" class="safety-score">Safety score: pending</p>
+        </div>
+
+        <div class="record-id">
+          <span>REGISTRATION ID</span>
+          <strong id="touristIdDisplay"></strong>
+        </div>
+
+        <details class="score-explanation">
+          <summary>About this prototype score</summary>
+          <p id="scoreFactorText">This estimate is based on distance to configured risk zones and is not a validated safety assessment.</p>
+        </details>
+
+        <div class="location-box">
+          <div class="location-heading">
+            <div>
+              <p class="eyebrow">LOCATION SHARING</p>
+              <h2>Current location</h2>
+            </div>
+            <span class="live-indicator"><span></span> MONITORING</span>
+          </div>
+          <p id="currentLocation" class="coordinates">Waiting for location update</p>
+        </div>
+
+        <div class="status" aria-label="Tracking service status">
+          <div class="status-row"><span>Location service</span><strong id="gpsStatus">Inactive</strong></div>
+          <div class="status-row"><span>Safety monitoring</span><strong id="trackingStatus">Inactive</strong></div>
+        </div>
+
+        <div class="emergency-panel">
+          <div>
+            <h2>Emergency assistance</h2>
+            <p>Use only when you need immediate help.</p>
+          </div>
+          <button id="panicBtn" class="btn btn-danger" type="button">Send emergency alert</button>
+        </div>
+      </section>
+
+      <footer class="page-footer">
+        Visitor Safety Services <span aria-hidden="true">·</span> Keep your registration details current
+      </footer>
+    </main>
+  </div>
+
+  <script src="app.js" ></script>
+</body>
+</html>

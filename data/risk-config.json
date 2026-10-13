@@ -1,0 +1,22 @@
+{
+  "thresholds": {
+    "criticalKm": 3,
+    "highKm": 10,
+    "mediumKm": 25
+  },
+  "staleAfterMinutes": 5,
+  "zones": [
+    {
+      "name": "Remote Forest Area",
+      "lat": 25.5,
+      "lng": 91.8,
+      "radius": 5
+    },
+    {
+      "name": "Restricted Border Zone",
+      "lat": 25.6,
+      "lng": 91.9,
+      "radius": 3
+    }
+  ]
+}

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0b1220">
+    <title>Tourist Safety | Operations Console</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+</head>
+<body>
+    <div class="app-shell">
+        <header class="topbar">
+            <div class="agency-brand">
+                <div class="brand-mark" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M12 2.8 20 6v5.2c0 5.2-3.4 8.5-8 10-4.6-1.5-8-4.8-8-10V6l8-3.2Z" stroke="currentColor" stroke-width="1.6"/>
+                        <path d="m8.5 12.1 2.2 2.2 4.8-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div>
+                    <p class="brand-kicker">PUBLIC SAFETY SYSTEMS</p>
+                    <p class="brand-name">Tourist Safety Operations</p>
+                </div>
+            </div>
+            <div class="system-meta">
+                <div class="connection-pill" aria-live="polite">
+                    <span id="statusIndicator" class="status-dot"></span>
+                    <span id="connectionStatus">Connecting</span>
+                </div>
+                <div class="meta-divider"></div>
+                <div class="clock-block">
+                    <span class="meta-label">LOCAL SYSTEM TIME</span>
+                    <time id="systemClock">--</time>
+                </div>
+            </div>
+        </header>
+
+        <main class="dashboard-container">
+            <section class="page-heading" aria-labelledby="pageTitle">
+                <div>
+                    <p class="eyebrow">OPERATIONS OVERVIEW</p>
+                    <h1 id="pageTitle">Situation dashboard</h1>
+                    <p class="page-summary">Monitor registered visitors, active field locations, and incoming safety alerts.</p>
+                </div>
+                <div class="classification">LIVE MONITORING</div>
+            </section>
+
+            <section class="stats" aria-label="Operational summary">
+                <article class="stat-card">
+                    <div class="stat-topline"><span class="stat-label">REGISTERED VISITORS</span><span class="stat-mark mark-blue"></span></div>
+                    <div class="stat-number" id="totalRegistered">0</div>
+                    <div class="stat-footnote">All records on file</div>
+                </article>
+                <article class="stat-card">
+                    <div class="stat-topline"><span class="stat-label">ACTIVE VISITORS</span><span class="stat-mark mark-green"></span></div>
+                    <div class="stat-number" id="totalTourists">0</div>
+                    <div class="stat-footnote">Within current travel dates</div>
+                </article>
+                <article class="stat-card">
+                    <div class="stat-topline"><span class="stat-label">ACTIVE ALERTS</span><span class="stat-mark mark-amber"></span></div>
+                    <div class="stat-number" id="activeAlerts">0</div>
+                    <div class="stat-footnote">Requires operator review</div>
+                </article>
+                <article class="stat-card stat-card-critical">
+                    <div class="stat-topline"><span class="stat-label">CRITICAL ALERTS</span><span class="stat-mark mark-red"></span></div>
+                    <div class="stat-number" id="criticalAlerts">0</div>
+                    <div class="stat-footnote">Priority response</div>
+                </article>
+            </section>
+
+            <details id="mapDisclosure" class="foldout map-foldout">
+                <summary>
+                    <span>Location review map</span>
+                    <span id="mapSelection" class="foldout-meta">Select an alert to view its location</span>
+                </summary>
+                <section id="mapSection" class="map-section" aria-labelledby="mapHeading">
+                    <div class="map-layout">
+                        <div class="map-canvas-column">
+                            <div class="section-heading">
+                                <div><p class="section-kicker">FIELD AWARENESS</p><h2 id="mapHeading">Alert and visitor locations</h2></div>
+                                <span id="mapFreshnessNote" class="section-index">Loading freshness rule</span>
+                            </div>
+                            <div id="alertMap" role="application" aria-label="Map showing alert and visitor locations"></div>
+                            <p class="map-legend"><span class="legend-live"></span> Live <span class="legend-simulated"></span> Simulated <span class="legend-stale"></span> Stale</p>
+                            <p id="mapStatus" class="map-status">Select an alert to center the map.</p>
+                        </div>
+                        <aside id="alertDetailPanel" class="alert-detail-panel hidden" aria-labelledby="alertDetailTitle">
+                            <div class="detail-heading">
+                                <div><p class="section-kicker">SELECTED INCIDENT</p><h2 id="alertDetailTitle">Alert details</h2></div>
+                                <button class="icon-button" id="closeAlertDetails" type="button" aria-label="Close alert details">×</button>
+                            </div>
+                            <div id="alertDetailContent" class="detail-content"></div>
+                            <div class="workflow-actions">
+                                <button id="resolveAlertBtn" class="small-button resolve-button" type="button">Resolve</button>
+                                <button id="deleteAlertBtn" class="small-button clear-btn-danger" type="button" disabled>Delete</button>
+                            </div>
+                        </aside>
+                    </div>
+                </section>
+            </details>
+
+            <div class="main-content">
+                <section class="section section-alerts" aria-labelledby="alertsHeading">
+                    <div class="section-heading">
+                        <div>
+                            <p class="section-kicker">INCIDENT MANAGEMENT</p>
+                            <h2 id="alertsHeading">Recent alerts</h2>
+                        </div>
+                        <span class="section-index">01</span>
+                    </div>
+                    <p id="riskThresholdNote" class="risk-threshold-note">Distance from nearest configured risk-zone edge.</p>
+                    <details class="nested-foldout filter-foldout">
+                        <summary>Filter alerts <span id="filterCount" class="foldout-meta">All</span></summary>
+                        <div class="filter-grid">
+                            <label class="compact-field">Priority<select id="alertFilterPriority"><option value="ALL">All priorities</option><option>CRITICAL</option><option>HIGH</option><option>MEDIUM</option></select></label>
+                            <label class="compact-field">Danger category<select id="alertFilterDanger"><option value="ALL">All categories</option><option>CRITICAL</option><option>HIGH</option><option>MEDIUM</option><option>UNASSESSED</option></select></label>
+                            <label class="compact-field">Status<select id="alertFilterStatus"><option value="ALL">All statuses</option><option>ACTIVE</option><option>ACKNOWLEDGED</option><option>RESOLVED</option></select></label>
+                            <label class="compact-field">Time range<select id="alertFilterTime"><option value="ALL">Any time</option><option value="1">Last hour</option><option value="24">Last 24 hours</option><option value="168">Last 7 days</option></select></label>
+                        </div>
+                    </details>
+                    <div id="alertsList" class="alerts-list"><p class="no-data">Loading alerts...</p></div>
+                </section>
+
+                <details class="section foldout" id="locationsDisclosure" open>
+                    <summary><span><span class="section-kicker">FIELD AWARENESS</span><span class="foldout-title" id="locationsHeading">Active locations</span></span><span class="section-index">02</span></summary>
+                    <p id="staleThresholdNote" class="helper-note"></p>
+                    <div id="locationsList" class="locations-list"><p class="no-data">Loading active locations...</p></div>
+                </details>
+
+                <details class="section foldout section-tourists" id="touristsDisclosure">
+                    <summary><span><span class="section-kicker">REGISTRY</span><span class="foldout-title" id="touristsHeading">Registered visitors</span></span><span class="section-index">03</span></summary>
+                    <label class="compact-field visitor-search">Search by visitor name or ID<input id="visitorSearch" type="search" placeholder="Search registry" autocomplete="off"></label>
+                    <p class="helper-note score-note">Prototype estimate based on distance to configured risk zones; not a validated safety assessment.</p>
+                    <div id="touristsList" class="tourists-list"><p class="no-data">Loading visitor registry...</p></div>
+                </details>
+            </div>
+
+            <details class="foldout admin-foldout" >
+                <summary >
+                    <span>Administrative controls and risk settings</span>
+                    <span class="foldout-meta">Restricted</span>
+                </summary>
+                <div class="foldout-content">
+                <div class="footer-copy">
+                    <span class="footer-title">Administrative controls</span>
+                    <span class="footer-note">Changes affect stored operational records.</span>
+                </div>
+                <div class="footer-actions">
+                    <button id="resetDashboardBtn" class="clear-btn">Clear operational data</button>
+                    <button id="resetregister" class="clear-btn clear-btn-danger">Clear all records</button>
+                </div>
+                    <form id="riskConfigForm" class="risk-config-form">
+                        <h2>Risk zone configuration</h2>
+                        <p class="helper-note">Thresholds measure distance from a zone’s edge. Saving applies these settings to new location updates.</p>
+                        <div class="filter-grid threshold-grid">
+                            <label class="compact-field">Critical (km)<input id="criticalThreshold" type="number" min="0.1" step="0.1" required></label>
+                            <label class="compact-field">High (km)<input id="highThreshold" type="number" min="0.1" step="0.1" required></label>
+                            <label class="compact-field">Medium (km)<input id="mediumThreshold" type="number" min="0.1" step="0.1" required></label>
+                            <label class="compact-field">Mark stale after (minutes)<input id="staleAfterMinutes" type="number" min="1" max="1440" step="1" required></label>
+                        </div>
+                        <label class="compact-field zone-editor-label">Risk zones (JSON array)
+                            <textarea id="riskZonesJson" rows="7" spellcheck="false" required></textarea>
+                        </label>
+                        <div class="risk-config-actions"><button class="small-button primary-button" type="submit">Save risk settings</button><span id="riskConfigStatus" class="helper-note" role="status"></span></div>
+                    </form>
+                </div>
+            </details>
+
+            <footer class="dashboard-footer"><span class="footer-note">Safety score is an estimate only · Sensitive visitor details remain masked.</span></footer>
+        </main>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="dashboard.js"></script>
+</body>
+</html>
